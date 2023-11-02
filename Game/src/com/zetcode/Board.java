@@ -22,7 +22,6 @@ public class Board extends JPanel implements ActionListener {
     private boolean chooseLevel = false;
     private boolean hasDied = false;
     private boolean leaderboardDisplayed = false;
-    private boolean finish = false;
     private final int BLOCK_SIZE = 24;
     private final int N_BLOCKS = 15;
     private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
@@ -50,6 +49,8 @@ public class Board extends JPanel implements ActionListener {
     private Image bpacman4up, bpacman4down, bpacman4left, bpacman4right;
 
     private Image IntroScreen, ChooseLevelScreen, DeathScreen;
+    
+    private String playeName;
     
     private int pacman_x, pacman_y, pacmand_x, pacmand_y;
     private int req_dx, req_dy, view_dx, view_dy;
@@ -189,7 +190,13 @@ public class Board extends JPanel implements ActionListener {
                 g2d.drawImage(ChooseLevelScreen, -10, 0, this);
             } else if (hasDied && !leaderboardDisplayed) {
                 leaderboardDisplayed = true; // Set the flag to indicate that leaderboard has been displayed
-                LeaderboardManager.displayLeaderboard(highScore);
+                if (score1 > score2){
+                    playeName = JOptionPane.showInputDialog("(Player 1) Please enter your name: ");
+                    LeaderboardManager.displayLeaderboard(highScore, playeName);
+                }else {
+                    playeName = JOptionPane.showInputDialog("(Player 2) Please enter your name: ");
+                    LeaderboardManager.displayLeaderboard(highScore, playeName);
+                }
             } else if (hasDied && leaderboardDisplayed) {
                 g2d.drawImage(DeathScreen, -10, 0, this);
             }
@@ -274,7 +281,7 @@ public class Board extends JPanel implements ActionListener {
     }
 
     
-    private void death1 () {
+   private void death1 () {
         if (inGame) {
             if (dying1) {
                 pacsLeft1--;
@@ -1055,12 +1062,12 @@ private void displayYouDiedScreen(Graphics g) { //delete
                 } else if (key == 'x' || key == 'X') {
                     hasDied = false;
                     leaderboardDisplayed = false;
-                    finish = false;
+                    highScore = 0;
                 }
         
         }
     }
-}
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
