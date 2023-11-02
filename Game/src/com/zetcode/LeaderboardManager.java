@@ -1,7 +1,7 @@
 package com.zetcode;
 
 import javax.swing.*;
-import java.awt.Font;
+import java.awt.*;
 import java.util.List;
 import java.io.*;
 import java.util.ArrayList;
@@ -50,20 +50,39 @@ public class LeaderboardManager {
             });
 
             DefaultListModel<String> leaderboardModel = new DefaultListModel<>();
-            for (String entry : leaderboardData) {
-                leaderboardModel.addElement(entry);
+            for (int i = 0; i < leaderboardData.size(); i++) {
+                String entry = leaderboardData.get(i);
+                String[] parts = entry.split(": ");
+                String name = parts[0];
+                int score = Integer.parseInt(parts[1]);
+                String rank = Integer.toString(i + 1); // Ranking numbers
+
+                // Use a custom renderer to format and style the leaderboard
+                String formattedEntry = String.format("  %-2s %-15s %s", rank, name, score);
+                leaderboardModel.addElement(formattedEntry);
             }
 
             JList<String> leaderboardList = new JList<>(leaderboardModel);
 
-            // Use a smaller font size
-            leaderboardList.setFont(new Font("Arial", Font.PLAIN, 14));
+            // Use a monospaced font for consistent alignment
+            leaderboardList.setFont(new Font("Monospaced", Font.BOLD, 16));
+            leaderboardList.setForeground(Color.YELLOW);
+            leaderboardList.setBackground(Color.BLACK);
+            leaderboardList.setSelectionBackground(Color.RED);
 
-            frame.add(new JScrollPane(leaderboardList));
+            JScrollPane scrollPane = new JScrollPane(leaderboardList);
+            frame.add(scrollPane);
+            
+            // Calculate the frame height based on the number of entries
+            int numEntries = leaderboardModel.getSize();
+            int frameHeight = Math.min(600, numEntries * 22 + 50); // Limit max height
+            
             frame.setLocation(650, 320);
             ImageIcon licon = new ImageIcon("src/resources/images/licon.png");
             frame.setIconImage(licon.getImage());
-            frame.setSize(200, 200);
+            
+            frame.setSize(300, frameHeight); // Set frame size
+            
             frame.setVisible(true);
 
             saver = saveLeaderboardData(leaderboardData, "leaderboard.txt");
@@ -74,7 +93,7 @@ public class LeaderboardManager {
         return true;
     }
 
-    private static List<String> loadLeaderboardData(String fileName) {
+   private static List<String> loadLeaderboardData(String fileName) {
         List<String> leaderboardData = new ArrayList<>();
         try {
             File file = new File(fileName);
