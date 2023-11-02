@@ -16,24 +16,11 @@ public class Board extends JPanel implements ActionListener {
     private final Color dotColor = new Color(192, 192, 0);
     private Color mazeColor;
 
-    private boolean inGame = false;
-    private boolean dying1 = false;
-    private boolean dying2 = false;
-    private boolean chooseLevel = false;
-    private boolean hasDied = false;
-    private boolean leaderboardDisplayed = false;
-    private final int BLOCK_SIZE = 24;
-    private final int N_BLOCKS = 15;
-    private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
-    private final int PAC_ANIM_DELAY = 2;
-    private final int PACMAN_ANIM_COUNT = 4;
-    private final int MAX_GHOSTS = 12;
-    private final int PACMAN_SPEED = 6;
+    private boolean inGame, dying1, dying2, chooseLevel, hasDied, leaderboardDisplayed, youDiedScreen = false;
+    private final int BLOCK_SIZE = 24, N_BLOCKS = 15, SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
+    private final int PAC_ANIM_DELAY = 2, PACMAN_ANIM_COUNT = 4, MAX_GHOSTS = 12, PACMAN_SPEED = 6;
+    private int pacAnimCount = PAC_ANIM_DELAY, pacAnimDir = 1, pacmanAnimPos = 0;
 
-    private int pacAnimCount = PAC_ANIM_DELAY;
-    private int pacAnimDir = 1;
-    private int pacmanAnimPos = 0;
-    
     private int N_GHOSTS = 6;
     private int pacsLeft1, pacsLeft2, score1, score2;
     private int[] dx, dy;
@@ -56,7 +43,6 @@ public class Board extends JPanel implements ActionListener {
     private int req_dx, req_dy, view_dx, view_dy;
     
     private int highScore = 0;
-    private boolean youDiedScreen = false;
     
     private boolean multiplayer;
     
@@ -65,8 +51,7 @@ public class Board extends JPanel implements ActionListener {
     private int pacman2_x, pacman2_y, pacmand2_x, pacmand2_y;
     private int req_dx2, req_dy2, view_dx2, view_dy2;
     private int pacAnimCount2 = PAC_ANIM_DELAY;
-    private int pacAnimDir2 = 1;
-    private int pacmanAnimPos2 = 0;
+    private int pacAnimDir2 = 1, pacmanAnimPos2 = 0;;
     
     //music
     private Clip backgroundMusicClip;
@@ -190,11 +175,11 @@ public class Board extends JPanel implements ActionListener {
                 g2d.drawImage(ChooseLevelScreen, -10, 0, this);
             } else if (hasDied && !leaderboardDisplayed) {
                 leaderboardDisplayed = true; // Set the flag to indicate that leaderboard has been displayed
-                if (score1 > score2){
-                    playeName = JOptionPane.showInputDialog("(Player 1) Please enter your name: ");
+                if (score1 > score2) {
+                    playeName = getPlayerName("(Player 1) Please enter your name (max 8 characters): ");
                     LeaderboardManager.displayLeaderboard(highScore, playeName);
-                }else {
-                    playeName = JOptionPane.showInputDialog("(Player 2) Please enter your name: ");
+                } else {
+                    playeName = getPlayerName("(Player 2) Please enter your name (max 8 characters): ");
                     LeaderboardManager.displayLeaderboard(highScore, playeName);
                 }
             } else if (hasDied && leaderboardDisplayed) {
@@ -202,7 +187,13 @@ public class Board extends JPanel implements ActionListener {
             }
         }   
 
-
+        private static String getPlayerName(String prompt) {
+        String playerName;
+        do {
+            playerName = JOptionPane.showInputDialog(prompt);
+        } while (playerName != null && playerName.length() > 8); // Limit to 8 characters
+            return playerName;
+    }
     
     private void drawScore(Graphics2D g) {
 
